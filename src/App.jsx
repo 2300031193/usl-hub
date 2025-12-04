@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
 import gsap from 'gsap';
 import { Terminal, RefreshCw } from 'lucide-react';
 
@@ -8,6 +8,7 @@ import Dashboard from './components/Dashboard';
 import HubMenuButton from './components/HubMenuButton';
 import MiniCalendar from './components/MiniCalendar';
 import WeatherWidget from './components/WeatherWidget';
+import LoginPage from './pages/LoginPage';
 
 // Pages
 import LinksPage from './pages/LinksPage';
@@ -89,10 +90,19 @@ const DailyQuote = () => {
   );
 };
 
+// Auth Guard Component
+const ProtectedRoute = ({ children }) => {
+  const isAuthenticated = localStorage.getItem('usl_is_authenticated') === 'true';
+  return isAuthenticated ? children : <Navigate to="/login" replace />;
+};
+
 function App() {
   const appRef = useRef(null);
 
   useEffect(() => {
+    // CRITICAL FIX: Don't animate if appRef is null (e.g. when redirected to login)
+    if (!appRef.current) return;
+
     const ctx = gsap.context(() => {
       gsap.from("header", { y: -50, duration: 1, ease: "power3.out" });
     }, appRef);
@@ -102,55 +112,67 @@ function App() {
 
   return (
     <Router>
-      <div ref={appRef} className="min-h-screen" style={{ paddingBottom: '4rem' }}>
-        <div className="container">
-          {/* Header Section */}
-          <header style={{ marginBottom: '3rem', paddingTop: '2rem' }}>
+      <Routes>
+        {/* Public Route */}
+        <Route path="/login" element={<LoginPage />} />
 
-            <div className="header-container">
+        {/* Protected Routes */}
+        <Route path="/*" element={
+          <ProtectedRoute>
+            <div ref={appRef} className="min-h-screen" style={{ paddingBottom: '4rem' }}>
+              <div className="container">
+                {/* Header Section */}
+                <header style={{ marginBottom: '3rem', paddingTop: '2rem' }}>
 
-              {/* Centered Title Group with Menu Button */}
-              <div className="header-title-group" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                  <div className="header-container">
 
-                {/* Menu Button - Left of Logo */}
-                <HubMenuButton />
+                    {/* Menu Button - Fixed Top Left */}
+                    <div style={{ position: 'absolute', left: 0, top: '35%', transform: 'translateY(-50%)', zIndex: 50 }}>
+                      <HubMenuButton />
+                    </div>
 
-                <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '1rem', textDecoration: 'none', color: 'inherit' }}>
-                  <div style={{ background: 'rgba(59, 130, 246, 0.2)', padding: '1rem', borderRadius: '50%' }}>
-                    <Terminal size={40} color="#3b82f6" />
+                    {/* Centered Title Group */}
+                    <div className="header-title-group" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+
+                      <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '1rem', textDecoration: 'none', color: 'inherit' }}>
+                        <div style={{ background: 'rgba(59, 130, 246, 0.2)', padding: '1rem', borderRadius: '50%' }}>
+                          <Terminal size={40} color="#3b82f6" />
+                        </div>
+                        <div style={{ textAlign: 'left' }}>
+                          <h1 style={{ fontSize: '2.5rem', margin: 0, lineHeight: 1 }}>USL Hub</h1>
+                          <p style={{ fontSize: '1rem', color: '#cbd5e1', margin: 0 }}>Command Center • Chaitanya USL</p>
+                        </div>
+                      </Link>
+                    </div>
+
+                    {/* Right Side Widgets */}
+                    <div className="header-widgets">
+                      <MiniCalendar />
+                      <WeatherWidget />
+                    </div>
+
                   </div>
-                  <div style={{ textAlign: 'left' }}>
-                    <h1 style={{ fontSize: '2.5rem', margin: 0, lineHeight: 1 }}>USL Hub</h1>
-                    <p style={{ fontSize: '1rem', color: '#cbd5e1', margin: 0 }}>Command Center • Chaitanya USL</p>
+
+                  {/* Daily Quote Section */}
+                  <div style={{ textAlign: 'center' }}>
+                    <DailyQuote />
                   </div>
-                </Link>
+                </header>
+
+                {/* Main Content Routes */}
+                <Routes>
+                  <Route path="/" element={<Dashboard />} />
+                  <Route path="/links" element={<LinksPage />} />
+                  <Route path="/timetable" element={<TimetablePage />} />
+                  <Route path="/files" element={<FilesPage />} />
+                  <Route path="/hanuman" element={<HanumanPage />} />
+                </Routes>
+
               </div>
-
-              {/* Right Side Widgets */}
-              <div className="header-widgets">
-                <MiniCalendar />
-                <WeatherWidget />
-              </div>
-
             </div>
-
-            {/* Daily Quote Section */}
-            <div style={{ textAlign: 'center' }}>
-              <DailyQuote />
-            </div>
-          </header>
-
-          {/* Main Content Routes */}
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/links" element={<LinksPage />} />
-            <Route path="/timetable" element={<TimetablePage />} />
-            <Route path="/files" element={<FilesPage />} />
-            <Route path="/hanuman" element={<HanumanPage />} />
-          </Routes>
-
-        </div>
-      </div>
+          </ProtectedRoute>
+        } />
+      </Routes>
     </Router>
   );
 }
