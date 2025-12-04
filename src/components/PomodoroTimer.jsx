@@ -119,7 +119,7 @@ function PomodoroTimer() {
                     </div>
 
                     <div style={{
-                        fontSize: '4rem',
+                        fontSize: '3.5rem',
                         fontWeight: '700',
                         fontFamily: 'monospace',
                         marginBottom: '1.5rem',

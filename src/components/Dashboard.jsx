@@ -8,42 +8,38 @@ import RoutineSection from './RoutineSection';
 
 const Dashboard = () => {
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 auto-rows-fr">
-            {/* Row 1: Vision & Focus */}
-            <div className="animate-in fade-in slide-in-from-left-4 duration-500">
-                <div className="h-full">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', width: '100%', maxWidth: '1600px', margin: '0 auto' }}>
+
+            {/* Row 1: Vision (Rectangle - 66%) & Timer (Square - 33%) */}
+            <div style={{ display: 'flex', gap: '24px', height: '280px', flexDirection: 'row' }}>
+                <div style={{ flex: 2, minWidth: 0 }}>
                     <GoalSection />
                 </div>
-            </div>
-            <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-                <div className="h-full">
+                <div style={{ flex: 1, minWidth: '300px' }}>
                     <PomodoroTimer />
                 </div>
             </div>
 
-            {/* Row 2: Tasks & Ideas */}
-            <div className="animate-in fade-in slide-in-from-left-4 duration-500 delay-100">
-                <div className="h-full">
+            {/* Row 2: Tasks & Ideas (50/50) */}
+            <div style={{ display: 'flex', gap: '24px', height: '400px', flexDirection: 'row' }}>
+                <div style={{ flex: 1 }}>
                     <TodoList />
                 </div>
-            </div>
-            <div className="animate-in fade-in slide-in-from-right-4 duration-500 delay-100">
-                <div className="h-full">
+                <div style={{ flex: 1 }}>
                     <Notebook />
                 </div>
             </div>
 
-            {/* Row 3: Routine & Health */}
-            <div className="animate-in fade-in slide-in-from-left-4 duration-500 delay-200">
-                <div className="h-full">
+            {/* Row 3: Routine & Health (50/50) */}
+            <div style={{ display: 'flex', gap: '24px', height: '400px', flexDirection: 'row' }}>
+                <div style={{ flex: 1 }}>
                     <RoutineSection />
                 </div>
-            </div>
-            <div className="animate-in fade-in slide-in-from-right-4 duration-500 delay-200">
-                <div className="h-full">
+                <div style={{ flex: 1 }}>
                     <HealthSection />
                 </div>
             </div>
+
         </div>
     );
 };
